@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Injection Schedule List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .table-header {
+            background-color: #17a2b8;
+            color: white;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            margin-top: 20px;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/vaccineType.css">
+</head>
+<body>
+<div class="row">
+    <div th:replace="fragments/commons/header :: header"></div>
+</div>
+<div class="row second-row">
+    <div class="col-3">
+        <div th:replace="fragments/commons/left :: left"></div>
+    </div>
+    <div class="col-9">
+        <div class="container mt-5">
+            <h3 class="text-center">INJECTION SCHEDULE LIST</h3>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <label for="entries">Show</label>
+                    <select id="entries" class="form-select d-inline-block w-auto">
+                        <option>5</option>
+                        <option>10</option>
+                        <option>15</option>
+                    </select> entries
+                </div>
+                <!-- Search input -->
+                <div class="search-bar">
+                    <form id="searchForm" method="get" action="/injection-schedules">
+                        <label>
+                            <input type="text" name="search" placeholder="Search..." th:value="${search}"/>
+                        </label>
+                        <input type="hidden" name="size" th:value="${size}"/>
+                        <input type="hidden" name="page" value="1"/>
+                        <button type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
+
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr class="table-header">
+                    <th>Vaccine</th>
+                    <th>Time</th>
+                    <th>Place</th>
+                    <th>Status</th>
+                    <th>Description</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="row : ${pageDto.data}">
+                    <td><a th:href="@{/injection-schedules/update/{id}(id=${row.id})}" th:text="${row.vaccineName}"></a>
+                    </td>
+                    <td th:text="${row.time}"></td>
+                    <td th:text="${row.place}"></td>
+                    <td th:text="${row.status}"></td>
+                    <td th:text="${row.description}"></td>
+                </tr>
+
+                </tbody>
+            </table>
+            <div class="pagination">
+                <a th:if="${page > 1}" th:href="@{/injection-schedules(page=1, size=${size}, search=${search})}">«</a>
+                <a th:if="${page > 1}" th:href="@{/injection-schedules(page=${page - 1}, size=${size}, search=${search})}">‹</a>
+                <a th:each="i : ${#numbers.sequence(page - 2, page + 2)}"
+                   th:if="${i > 0 && i <= totalPages}"
+                   th:classappend="${i == page} ? 'disabled' : ''"
+                   th:href="@{/injection-schedules(page=${i}, size=${size}, search=${search})}"
+                   th:text="${i}">1</a>
+                <a th:if="${page < totalPages}" th:href="@{/injection-schedules(page=${page + 1}, size=${size}, search=${search})}">›</a>
+                <a th:if="${page < totalPages}"
+                   th:href="@{/injection-schedules(page=${totalPages}, size=${size}, search=${search})}">»</a>
+            </div>
+            <div class="show-entries">
+                Show
+                <span th:text="${start}"></span>
+                to
+                <span th:text="${end}"></span>
+                of
+                <span th:text="${totalElements}"></span>
+                entities
+            </div>
+            <div class="action-buttons">
+                <div class="buttons">
+                    <a href="/injection-schedules/create" class="btn btn-primary">New Injection Schedule</a>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+</body>
+</html>

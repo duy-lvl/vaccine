@@ -1,0 +1,208 @@
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  overflow-x: hidden;
+}
+
+.main-content {
+  margin-left: 300px;
+  padding: 20px;
+  background-color: #f4f4f4;
+  min-height: 100vh;
+}
+.header{
+  position: fixed;
+  z-index: 100;
+}
+.sidebar {
+  position: fixed;
+  width: 300px;
+  height: 100%;
+  background-color: #ffffff;
+  color: #000000;
+  padding-top: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 1;
+  max-height: 100vh;
+}
+
+.sidebar-header {
+  background-color: #00796B;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar .user-profile {
+  background: linear-gradient(to right, #F57C00, #E65100);
+  padding: 20px;
+  text-align: left;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.sidebar .user-profile img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-right: 10px;
+  float: left;
+}
+
+.sidebar .user-profile h4 {
+  margin: 0;
+  color: white;
+  font-size: 1em;
+}
+
+.sidebar .user-profile p {
+  margin: 5px 0 0 0;
+  font-size: 0.8em;
+  color: white;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.sidebar ul li a {
+  color: #000000;
+  text-decoration: none;
+  display: block;
+  font-size: 0.8em;
+  font-weight: bold;
+  padding: 15px 20px;
+  transition: background-color 0.3s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active,
+.sidebar ul li ul li a:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #00796B;
+}
+
+.sidebar ul li a > i {
+  float: right;
+  margin-left: auto;
+}
+
+.sidebar ul li ul {
+  padding-left: 20px;
+  background-color: transparent;
+  margin: 0;
+  display: none;
+}
+
+.sidebar ul li ul.show {
+  display: block;
+}
+
+.sidebar ul li ul li {
+  border-bottom: none;
+}
+
+.sidebar ul li ul li a {
+  padding: 10px 40px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.sidebar ul li ul li a.active::before {
+  content: ">";
+  position: absolute;
+  left: 30px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.navbar {
+  background-color: #00796B;
+  color: white;
+}
+
+.navbar-brand {
+  color: white;
+  font-size: 1.2em;
+  margin-left: 10px;
+}
+
+.navbar .form-inline .form-control {
+  width: 300px;
+  max-width: 100%;
+}
+
+.jumbotron {
+  background-color: #ffffff;
+  padding: 30px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.footer {
+  background-color: #f7f7f7;
+  text-align: center;
+  padding: 10px;
+}
+
+.footer .text-muted {
+  color: #5a5a5a;
+}
+
+.thead-dark {
+  background-color: #343a40;
+  color: white;
+}
+
+.user-profile {
+  position: relative;
+  overflow: hidden;
+}
+
+.cover-image {
+  background-image: url('#');
+  background-size: cover;
+  background-position: center;
+  height: 150px;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.profile-picture {
+  position: relative;
+  z-index: 1;
+  margin-top: 100px;
+}
+
+.logo-img {
+  width: 60px;
+  height: auto;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: #00796B;
+  border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: #00574B;
+}

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Injection Result</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/css/vaccineType.css">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .header, .left {
+            background-color: #f8f9fa;
+
+        }
+
+        .header {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .left {
+            width: 200px;
+            float: left;
+        }
+
+        .content {
+            margin-left: 220px;
+
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+
+        .search-bar {
+            float: right;
+            margin-bottom: 10px;
+        }
+
+        .pagination {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .pagination a.disabled {
+            pointer-events: none;
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+        .buttons {
+            margin-top: 10px;
+        }
+
+        .buttons button {
+            margin-right: 10px;
+        }
+
+        .show-entries {
+            margin-bottom: 10px;
+        }
+
+        .alert {
+            padding: 10px;
+            background-color: #f44336; /* Red */
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .alert.success {
+            background-color: #4CAF50; /* Green */
+        }
+
+        .alert.error {
+            background-color: #f44336; /* Red */
+        }
+
+        .form-group label {
+            font-weight: bold;
+        }
+
+        .form-group label::after {
+            content: ' *';
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<!-- Main content wrapper -->
+<div class="row">
+    <div th:replace="fragments/commons/header :: header"></div>
+</div>
+<div class="row second-row">
+    <div class="col-3">
+        <div th:replace="fragments/commons/left :: left"></div>
+    </div>
+    <div class=" col-9 container mt-5">
+        <h3 class="text-center">CREATE INJECTION RESULT</h3>
+        <!--    hidden form-->
+        <form id="addForm" th:action="@{/injection-results/add}" th:object="${injectionResultRequest}" method="post">
+            <input type="hidden" id="customerId" th:field="*{customerId}">
+            <input type="hidden" id="injectionDate" th:field="*{injectionDate}">
+            <input type="hidden" id="injectionPlace" th:field="*{injectionPlace}">
+            <input type="hidden" id="vaccineId" th:field="*{vaccineId}">
+            <input type="hidden" th:field="*{numberOfInjection}" value="1">
+        </form>
+
+        <form th:object="${request}" th:action="@{/injection-results/create}" method="post">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="dateOfInjection">Date of Injection</label>
+                        <input type="date" id="dateOfInjection" required class="form-control"
+                               th:field="*{injectionDate}">
+                        <div class="text-danger" th:if="${#fields.hasErrors('injectionDate')}"
+                             th:errors="*{injectionDate}"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label for="vaccineType">Vaccine Type</label>
+                        <select id="vaccineType" class="form-control" th:field="*{vaccineTypeId}" required>
+
+                            <option value="">-- Select vaccine type --</option>
+                            <option th:each="vaccineType : ${vaccineTypes}"
+                                    th:text="${vaccineType.name}"
+                                    th:value="${vaccineType.id}">
+                            </option>
+                        </select>
+                        <div class="text-danger" th:if="${#fields.hasErrors('vaccineTypeId')}"
+                             th:errors="*{vaccineTypeId}"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="form-group mb-3">
+                        <label for="customer">Customer</label>
+                        <select id="customer" class="form-control" th:field="*{customerId}" required>
+                            <option value="">-- Select Customer --</option>
+                            <option th:each="customer : ${customers}"
+                                    th:text="${customer.name}"
+                                    th:value="${customer.id}"
+                                    th:selected="${customer.id == request.customerId}">
+                            </option>
+                        </select>
+                        <div class="text-danger" th:if="${#fields.hasErrors('customerId')}"
+                             th:errors="*{customerId}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="button" class="btn btn-warning btn-custom" onclick="window.location.href='/injection-results'">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+    <!-- Result Section -->
+    <div th:if="${result != null}" class="mt-5">
+        <h4>Injection Schedule Results</h4>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Vaccine Name</th>
+                <th>Time</th>
+                <th>Place</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="schedule : ${result.data}">
+                <td th:text="${schedule.vaccineName}"></td>
+                <td th:text="${schedule.time}"></td>
+                <td th:text="${schedule.place}"></td>
+                <td>
+                    <button th:attr="onclick=|addInjectionResult('${schedule.vaccineName}', '${schedule.place}')|"
+                            class="btn-primary">Choose
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    var customerId = document.getElementById('customerId');
+    var injectionDate = document.getElementById('injectionDate');
+    var injectionPlaceInput = document.getElementById('injectionPlace');
+    var vaccineIdInput = document.getElementById('vaccineId');
+    var addForm = document.getElementById('addForm');
+
+    function addInjectionResult(vaccineId, injectionPlace) {
+        customerId.value = document.getElementById('customer').value;
+        injectionDate.value = document.getElementById('dateOfInjection').value;
+        injectionPlaceInput.value = injectionPlace;
+        vaccineIdInput.value = vaccineId;
+
+        addForm.submit();
+    }
+
+    ;
+
+
+    $(document).ready(function () {
+        $('#customer').select2({
+            placeholder: 'Select an option',
+            allowClear: true,
+            width: '100%'
+        })
+
+
+    });
+
+</script>
+</body>
+</html>

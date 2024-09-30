@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="/css/vaccineType.css">
+</head>
+<body>
+<div class="row">
+    <div th:replace="fragments/commons/header :: header"></div>
+</div>
+<div class="row second-row">
+    <div class="col-3">
+        <div th:replace="fragments/commons/left :: left"></div>
+    </div>
+    <div class="col-9">
+        <div class="container mt-5">
+
+            <!-- Alert box that changes color based on messageType -->
+            <div th:if="${message}"
+                 th:classappend="${messageType == 'success'} ? 'alert alert-success' : 'alert alert-danger'"
+                 id="alertBox">
+                <p th:text="${message}"></p>
+            </div>
+            <h1 class="text-center" style="font-size: 26px">NEWS LIST</h1>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <label>Show
+                        <select class="custom-select custom-select-sm w-auto" id="entriesSelect" th:value="${size}"
+                                onchange="updatePageSize()">
+                            <option value="5" th:selected="${size == 5}">5</option>
+                            <option value="10" th:selected="${size == 10}">10</option>
+                            <option value="25" th:selected="${size == 25}">25</option>
+                            <option value="50" th:selected="${size == 50}">50</option>
+                            <option value="100" th:selected="${size == 100}">100</option>
+                        </select>
+                        entries
+                    </label>
+                </div>
+
+                <div class="searchBar">
+                    <form action="/news" id="searchForm" method="get">
+                        <label>
+                            <input type="text" name="search" placeholder="Search" th:value="${search}">
+                        </label>
+                        <input type="hidden" name="page" th:value="${page}">
+                        <input type="hidden" name="size" value="1">
+                        <button type="submit" class="btn btn-primary">Search</button>
+                    </form>
+
+                </div>
+            </div>
+
+            <table class="table table-bordered">
+                <thead class="bg-success">
+                <tr>
+                    <th><label for="selectAll">
+                        <input type="checkbox" name="selectAll" id="selectAll">
+                    </label></th>
+                    <th>No</th>
+                    <th>Title</th>
+                    <th>Preview</th>
+                    <th>Content</th>
+                </tr>
+
+                </thead>
+                <tbody>
+                <tr th:each="news :${pageDto.getData()}">
+                    <td>
+                        <label>
+                            <input type="checkbox"
+                                   class="news-checkbox" name="newsId" th:value="${news.id}"/>
+                        </label>
+                    </td>
+                    <td>
+                        <a th:text="${news.id}" href="#" class="news-id-link" data-news-id="${news.id}"
+                           th:attr="onclick=|deleteNews('${news.id}')|"/>
+                    </td>
+                    <td th:text="${news.title}"></td>
+                    <td th:text="${news.preview}"></td>
+                    <td th:text="${news.content}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="show-entries">
+                    Showing <span th:text="${start}"></span>
+                    to <span th:text="${end}"></span> of
+                    <span th:text="${totalElements}"></span>
+                    entries
+                </div>
+            </div>
+
+            <div class="pagination">
+                <a th:if="${page > 1}" th:href="@{/news(page=1, size=${size}, search=${search})}">«</a>
+
+                <a th:if="${page > 1}" th:href="@{/news(page=${page - 1}, size=${size}, search=${search})}">‹</a>
+
+                <a th:each="i : ${#numbers.sequence(page - 2, page + 2)}"
+                   th:if="${i > 0 && i <= totalPages}"
+                   th:classappend="${i == page} ? 'disabled' : ''"
+                   th:href="@{/news(page=${i}, size=${size}, search=${search})}"
+                   th:text="${i}">1</a>
+
+                <a th:if="${page < totalPages}"
+                   th:href="@{/news(page=${page + 1}, size=${size}, search=${search})}">›</a>
+
+                <a th:if="${page < totalPages}"
+                   th:href="@{/news(page=${totalPages}, size=${size}, search=${search})}">»</a>
+            </div>
+
+            <form id="deleteForm" th:action="@{/news/delete}" method="post">
+                <input type="hidden" name="deleteNewsId" id="deleteNewsId">
+            </form>
+
+            <div class="btn-group" role="group">
+                <button type="button" id="deleteNewsBtn" class="btn btn-danger" style="margin-right: 5px">Delete News
+                </button>
+
+                <button type="button" id="updateNewsBtn" class="btn btn-warning" style="margin-right: 5px">Update News
+                </button>
+
+                <a th:href="@{/news/add}" id="createNewsBtn" class="btn btn-success">Create
+                    News</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.onload = function () {
+        setTimeout(function () {
+            var messageDiv = document.getElementById("messageDiv");
+            if (messageDiv) {
+                messageDiv.style.display = "none";
+            }
+        }, 5000); // 5000ms = 5 seconds
+    };
+    const checkBox = document.querySelectorAll('.news-checkbox');
+    const deleteBtn = document.getElementById('deleteNewsBtn');
+    const updateNews = document.getElementById('updateNewsBtn');
+
+    // Function to update the page size based on the user's selection in the dropdown
+    function updatePageSize() {
+        const size = document.getElementById('entriesSelect').value; // Get the selected page size
+        const search = document.querySelector('.searchBar input').value; // Get the current search input
+        // Redirect to the updated URL with the new page size and search parameters
+        window.location.href = `/news?size=${size}&search=${encodeURIComponent(search)}&page=1`;
+    }
+
+    updateNews.addEventListener('click', function () {
+        const selectedCheckBox = document.querySelectorAll('.news-checkbox:checked');
+        if (selectedCheckBox.length === 1) {
+            const newsId = selectedCheckBox[0].value;
+            window.location.href = `/news/update/${newsId}`;
+        }
+    });
+
+    function updateButtonStates() {
+        const selectedCheckboxes = document.querySelectorAll('.news-checkbox:checked');
+        updateNews.enabled = selectedCheckboxes.length !== 1;
+        deleteBtn.enabled = selectedCheckboxes.length === 0;
+    }
+
+    checkBox.forEach(checkbox => {
+        checkbox.addEventListener('change', updateButtonStates)
+    });
+
+    document.getElementById('selectAll').addEventListener('change', function () {
+        const isChecked = this.checked;
+        document.querySelectorAll('.news-checkbox').forEach(function (checkBox) {
+            checkBox.checked = isChecked;
+        });
+        updateButtonStates();
+    })
+
+
+    deleteBtn.addEventListener('click', function () {
+        const selectedCheckBoxes = document.querySelectorAll('.news-checkbox:checked');
+        if (selectedCheckBoxes.length > 0) {
+            document.getElementById('deleteNewsId').value = Array.from(selectedCheckBoxes)
+                .map(cb => cb.value).join(',');
+             Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('deleteForm').submit();
+                }
+            });
+        }
+    });
+
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+</body>
+</html>

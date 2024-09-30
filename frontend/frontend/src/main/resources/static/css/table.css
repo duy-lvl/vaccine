@@ -1,0 +1,118 @@
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table, th, td {
+  border: 1px solid #ddd;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #009687;
+  color: white;
+  text-align: center;
+}
+
+tbody tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.pagination-controls {
+  text-align: right;
+  margin-top: 10px;
+}
+
+.pagination-controls a {
+  margin: 0 2px;
+  padding: 5px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+.pagination-controls a.active {
+  background-color: #0d6efd;
+  color: white;
+  font-weight: bold;
+}
+
+.form-inline {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.form-inline label {
+  margin-right: 10px;
+}
+
+.form-inline select, .form-inline input[type="text"] {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.form-inline button {
+  padding: 5px 10px;
+  border-radius: 4px;
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.form-inline button:hover {
+  background-color: #0056b3;
+}
+
+.action-buttons {
+  margin-top: 10px;
+  text-align: left;
+}
+
+.action-buttons button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  margin: 0 0px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.action-buttons .new {
+  background-color: #009687;
+  color: white;
+}
+
+.action-buttons .update {
+  background-color: #ffc107;
+  color: white;
+}
+
+.action-buttons .delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.entries-info {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+.active {
+  font-weight: bold;
+  text-decoration: underline;
+}

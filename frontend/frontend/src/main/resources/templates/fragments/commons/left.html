@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sidebar Menu</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        .dropdown-menu {
+            position: absolute;
+            z-index: 1050;
+        }
+
+        .sidebar {
+            position: relative;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+<div th:fragment="left" class="sidebar">
+    <div class="user-profile text-center d-flex align-items-center p-3" style="background-color: #4CAF50; color: white;">
+        <img th:src="${avatar}"  alt="User" class="img-fluid rounded-circle me-3">
+        <div>
+            <h4 th:text="${username}"></h4>
+        </div>
+    </div>
+
+    <nav class="bg-light nav flex-column" id="sidebar" style="min-width: 250px;">
+        <ul class="list-unstyled nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link collapsed" th:href="@{/dashboard}">Home</a>
+            </li>
+            <li class="nav-item" th:if="${T(fa.training.frontend.service.JwtToken).roles.contains(T(fa.training.frontend.util.Role).ADMIN)}">
+                <a href="#employeeManagementSubmenu" data-bs-toggle="collapse" aria-expanded="false"
+                   class="nav-link collapsed">Employee management <i class="fas fa-plus icon-toggle"></i></a>
+                <ul class="collapse list-unstyled" id="employeeManagementSubmenu">
+                    <li class="nav-item"><a th:href="@{/employees}" class="nav-link">Employee List</a></li>
+                    <li class="nav-item"><a th:href="@{/employees/create}" class="nav-link">Create Employee</a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a href="#customerManagementSubmenu" data-bs-toggle="collapse" aria-expanded="false"
+                   class=" nav-link collapsed">Customer management <i class="fas fa-plus icon-toggle"></i></a>
+                <ul class="collapse list-unstyled" id="customerManagementSubmenu">
+                    <li class="nav-item"><a th:href="@{/customers}" class="nav-link">Customer List</a></li>
+                    <li class="nav-item"><a th:href="@{/customers/add}" class="nav-link">Create Customer</a></li>
+                </ul>
+            </li>
+            <li class="nav-item" th:if="${T(fa.training.frontend.service.JwtToken).roles.contains(T(fa.training.frontend.util.Role).ADMIN)}">
+                <a href="#vaccineTypeManagementSubmenu" data-bs-toggle="collapse" aria-expanded="false"
+                   class="nav-link collapsed">Vaccine Type management <i class="fas fa-plus icon-toggle"></i></a>
+                <ul class="collapse list-unstyled" id="vaccineTypeManagementSubmenu">
+                    <li class="nav-item"><a th:href="@{/vaccine-types}" class="nav-link">Vaccine Type List</a></li>
+                    <li class="nav-item"><a th:href="@{/vaccine-types/add}" class="nav-link">Create Vaccine Type</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item" th:if="${T(fa.training.frontend.service.JwtToken).roles.contains(T(fa.training.frontend.util.Role).ADMIN)}">
+                <a href="#vaccineManagementSubmenu" data-bs-toggle="collapse" aria-expanded="false"
+                   class=" nav-link collapsed">Vaccine management <i class="fas fa-plus icon-toggle"></i></a>
+                <ul class="collapse list-unstyled" id="vaccineManagementSubmenu">
+                    <li class="nav-item"><a th:href="@{/vaccines}" class="nav-link">Vaccine List</a></li>
+                    <li class="nav-item"><a th:href="@{/vaccines/add}" class="nav-link">Create Vaccine</a></li>
+                    <li class="nav-item"><a th:href="@{/vaccines/import}" class="nav-link">Import Vaccine</a></li>
+                </ul>
+            </li>
+            <li class="nav-item" th:if="${T(fa.training.frontend.service.JwtToken).roles.contains(T(fa.training.frontend.util.Role).ADMIN)}">
+                <a href="#injectionScheduleSubmenu" data-bs-toggle="collapse" aria-expanded="false"
+                   class=" nav-link collapsed">Injection Schedule <i class="fas fa-plus icon-toggle"></i></a>
+                <ul class="collapse list-unstyled" id="injectionScheduleSubmenu">
+                    <li class="nav-item"><a th:href="@{/injection-schedules}" class="nav-link">Injection Schedule
+                        List</a></li>
+                    <li class="nav-item"><a th:href="@{/injection-schedules/create}" class="nav-link">Create Injection
+                        Schedule</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-item">
+                <a href="#injectionResultSubmenu" data-bs-toggle="collapse" aria-expanded="false"
+                   class=" nav-link collapsed">Injection Result <i class="fas fa-plus icon-toggle"></i></a>
+                <ul class="collapse list-unstyled" id="injectionResultSubmenu">
+                    <li class="nav-item"><a th:href="@{/injection-results}" class="nav-link">Result List</a></li>
+                    <li class="nav-item"><a th:href="@{/injection-results/create}" class="nav-link">Create Result</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item" th:if="${T(fa.training.frontend.service.JwtToken).roles.contains(T(fa.training.frontend.util.Role).ADMIN)}">
+                <a href="#newsTypeSubmenu" data-bs-toggle="collapse" aria-expanded="false" class=" nav-link collapsed">News
+                    Type<i class="fas fa-plus icon-toggle"></i></a>
+                <ul class="collapse list-unstyled" id="newsTypeSubmenu">
+                    <li class="nav-item"><a th:href="@{/news-types}" class="nav-link">News Type List</a></li>
+                    <li class="nav-item"><a th:href="@{/news-types/add}" class="nav-link">Create News Type</a></li>
+                </ul>
+            </li>
+            <li class="nav-item" th:if="${T(fa.training.frontend.service.JwtToken).roles.contains(T(fa.training.frontend.util.Role).ADMIN)}">
+                <a href="#newsSubmenu" data-bs-toggle="collapse" aria-expanded="false" class=" nav-link collapsed">News
+                    <i class="fas fa-plus icon-toggle"></i></a>
+                <ul class="collapse list-unstyled" id="newsSubmenu">
+                    <li class="nav-item"><a th:href="@{/news}" class="nav-link">News List</a></li>
+                    <li class="nav-item"><a th:href="@{/news/add}" class="nav-link">Create News</a></li>
+                </ul>
+            </li>
+            <li class="nav-item" >
+                <a href="#reportSubmenu" data-bs-toggle="collapse" aria-expanded="false" class="nav-link collapsed">Report
+                    <i class="fas fa-plus icon-toggle"></i></a>
+                <ul class="collapse list-unstyled" id="reportSubmenu">
+                    <li class="nav-item" th:if="${T(fa.training.frontend.service.JwtToken).roles.contains(T(fa.training.frontend.util.Role).ADMIN)}"><a th:href="@{/reports/customers/statistics}" class="nav-link">Report
+                        Customer</a></li>
+                    <li class="nav-item" th:if="${T(fa.training.frontend.service.JwtToken).roles.contains(T(fa.training.frontend.util.Role).ADMIN)}"><a th:href="@{/reports/vaccines/statistics}" class="nav-link">Report
+                        Vaccine</a></li>
+                    <li class="nav-item"><a th:href="@{/reports/injection-results/statistics}" class="nav-link">Report
+                        Injection Result</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Injection Results List</title>
+    <!-- Import SweetAlert2 for stylish alert boxes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <!-- Import Bootstrap CSS for styling -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <!-- Import Bootstrap JS for interactive components -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .header, .left {
+            background-color: #f8f9fa;
+
+        }
+
+        .header {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .left {
+            width: 200px;
+            float: left;
+        }
+
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+
+        .search-bar {
+            float: right;
+            margin-bottom: 10px;
+        }
+
+        .pagination {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .pagination a.disabled {
+            pointer-events: none;
+            color: #6c757d;
+            text-decoration: none;
+        }
+
+        .buttons {
+            margin-top: 10px;
+        }
+
+        .buttons button {
+            margin-right: 10px;
+        }
+
+        .show-entries {
+            margin-bottom: 10px;
+        }
+
+        .alert {
+            padding: 10px;
+            background-color: #f44336; /* Red */
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .alert.success {
+            background-color: #4CAF50; /* Green */
+        }
+
+        .alert.error {
+            background-color: #f44336; /* Red */
+        }
+    </style>
+    <link rel="stylesheet" href="/css/vaccineType.css">
+</head>
+<body>
+<!-- Main content wrapper -->
+<div class="row">
+    <div th:replace="fragments/commons/header :: header"></div>
+</div>
+<div class="row second-row">
+    <div class="col-3">
+        <div th:replace="fragments/commons/left :: left"></div>
+    </div>
+
+    <!-- Content section -->
+    <div class="col-9">
+        <div>
+            <!-- Alert box for success or error messages -->
+            <div th:if="${message}"
+                 th:classappend="${messageType == 'success'} ? 'alert success' : 'alert error'"
+                 id="alertBox">
+                <p th:text="${message}"></p>
+            </div>
+            <h1>INJECTION RESULT LIST</h1>
+            <!-- Dropdown to select number of entries per page -->
+            <div class="show-entries">
+                Show
+                <label>
+                    <select id="size" onchange="updatePageSize()">
+                        <option value="10" th:selected="${size == 10}">10</option>
+                        <option value="25" th:selected="${size == 25 }">25</option>
+                        <option value="50" th:selected="${size == 50}">50</option>
+                        <option value="100" th:selected="${size == 100}">100</option>
+                    </select>
+                </label>
+                entries
+            </div>
+            <!-- Search form -->
+            <div class="search-bar">
+                <form id="searchForm" method="get" action="/injection-results">
+                    <label>
+                        <input type="text" name="search" placeholder="Search..." th:value="${search}"/>
+                    </label>
+                    <input type="hidden" name="size" th:value="${size}"/>
+                    <input type="hidden" name="page" value="1"/>
+                    <button type="submit">Search</button>
+                </form>
+            </div>
+            <!-- Table for displaying injection results -->
+            <table>
+                <thead>
+                <tr>
+                    <th>
+                        <label for="selectAll">
+                            <input type="checkbox" name="selectAll" id="selectAll">
+                        </label>
+                    </th>
+                    <th>Customer</th>
+                    <th>Vaccine Name</th>
+                    <th>Injection</th>
+                    <th>Date of inject</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="injectionResultDto : ${pageDto.getData()}">
+                    <td>
+                        <label>
+                            <input type="checkbox" class="result-checkbox" name="resultId"
+                                   th:value="${injectionResultDto.id}"/>
+                        </label>
+                    </td>
+                    <td th:text="${injectionResultDto.customer}"></td>
+                    <td th:text="${injectionResultDto.vaccineName}"></td>
+                    <td th:text="${injectionResultDto.numberOfInjection}"></td>
+                    <td th:text="${injectionResultDto.injectionDate}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <!-- Pagination controls -->
+            <div class="pagination">
+                <!-- "First" button, goes to the first page, only enabled if the current page is greater than 1 -->
+                <a th:if="${page > 1}" th:href="@{/injection-results(page=1, size=${size}, search=${search})}">«</a>
+
+                <!-- "Previous" button, goes to the previous page, only enabled if the current page is greater than 1 -->
+                <a th:if="${page > 1}"
+                   th:href="@{/injection-results(page=${page - 1}, size=${size}, search=${search})}">‹</a>
+
+                <!-- Page number buttons -->
+                <a th:each="i : ${#numbers.sequence(page - 2, page + 2)}"
+                   th:if="${i > 0 && i <= totalPages}"
+                   th:classappend="${i == page} ? 'disabled' : ''"
+                   th:href="@{/injection-results(page=${i}, size=${size}, search=${search})}"
+                   th:text="${i}">1
+                </a>
+
+                <!-- "Next" button, goes to the next page, only enabled if the current page is less than totalPages -->
+                <a th:if="${page < totalPages}"
+                   th:href="@{/injection-results(page=${page + 1}, size=${size}, search=${search})}">›</a>
+
+                <!-- "Last" button, goes to the last page, only enabled if the current page is less than totalPages -->
+                <a th:if="${page < totalPages}"
+                   th:href="@{/injection-results(page=${totalPages}, size=${size}, search=${search})}">»</a>
+            </div>
+            <!-- Display information about the current page and total results -->
+            <div class="show-entries">
+                Show
+                <span th:text="${start}"></span>
+                to
+                <span th:text="${end}"></span>
+                of
+                <span th:text="${totalElements}"></span>
+                entities
+            </div>
+            <!-- Action buttons for deleting results -->
+            <div class="buttons">
+                <button id="newInjectionBtn" class="btn btn-primary">New Injection</button>
+
+                <button id="deleteResultBtn" class="btn btn-primary" disabled>Delete Result</button>
+            </div>
+        </div>
+        <!-- Hidden form for deleting results -->
+        <form id="deleteResultForm" method="post" th:action="@{/injection-results/delete}" style="display:none">
+            <input type="hidden" name="resultId" id="hiddenResultId">
+        </form>
+
+    </div>
+</div>
+
+<script>
+    // Function to update the page size based on the user's selection in the dropdown
+    function updatePageSize() {
+        const size = document.getElementById('size').value; // Get the selected page size
+        const search = document.querySelector('.search-bar input').value; // Get the current search input
+        // Redirect to the updated URL with the new page size and search parameters
+        window.location.href = `/injection-results?size=${size}&search=${encodeURIComponent(search)}&page=1`;
+    }
+
+    // Main function to handle events when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectAllCheckbox = document.getElementById('selectAll'); // Checkbox for selecting/deselecting all rows
+        const resultCheckboxes = document.querySelectorAll('.result-checkbox'); // All individual row checkboxes
+
+        const deleteButton = document.getElementById('deleteResultBtn'); // Delete button, initially disabled
+        const newInjectionButton = document.getElementById('newInjectionBtn'); // New Injection button
+
+        // Event listener for the "select all" checkbox
+        selectAllCheckbox.addEventListener('change', function () {
+            resultCheckboxes.forEach(checkbox => checkbox.checked = selectAllCheckbox.checked);
+            toggleButtons(); // Update button states based on the current checkbox selection
+        });
+
+        // Event listener for each individual row checkbox
+        resultCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                toggleButtons(); // Update button states based on the current checkbox selection
+            });
+        });
+
+
+        // Function to toggle the state of the action buttons (edit and delete)
+        function toggleButtons() {
+            const selectedCheckboxes = document.querySelectorAll('.result-checkbox:checked');
+            const selectedCount = selectedCheckboxes.length;
+
+            deleteButton.disabled = selectedCount === 0; // Enable delete button only if at least one checkbox is selected
+        }
+
+        // Handle "New Injection" button click
+        newInjectionButton.addEventListener('click', function () {
+            window.location.href = '/injection-results/create'; // Redirect to /injection-results/create
+        });
+
+
+
+        // Event listener for the delete button click
+        document.getElementById('deleteResultBtn').addEventListener('click', function () {
+            const selectedCheckboxes = document.querySelectorAll('.result-checkbox:checked');
+            if (selectedCheckboxes.length > 0) {
+                // Get the IDs of the selected items
+                const resultIdInput = document.getElementById('hiddenResultId');// Fix: select the correct input element
+                resultIdInput.value = Array.from(selectedCheckboxes).map(cb => cb.value).join(',');
+
+                // Display a confirmation alert using SweetAlert2
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // If the user confirms, submit the form to perform the deletion
+                        document.getElementById('deleteResultForm').submit();
+                    }
+                });
+            }
+        });
+    });
+</script>
+</body>
+</html>

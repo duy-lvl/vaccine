@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Employee</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .required::after {
+            content: "(*)";
+            color: red;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/vaccineType.css">
+</head>
+<body>
+<div class="row">
+    <div th:replace="fragments/commons/header :: header"></div>
+</div>
+<div class="row second-row">
+    <div class="col-3">
+        <div th:replace="fragments/commons/left :: left"></div>
+    </div>
+    <div class="col-9">
+        <div class="container mt-5">
+            <h1 class="text-center mb-4">EDIT EMPLOYEE</h1>
+            <form th:action="@{/employees/update/{id}(id=${employeeUpdateDto.id})}" th:object="${employeeUpdateDto}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="isUpdating" value="false" id="isUpdating">
+                <div class="row">
+                    <!-- Employee Name -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="employeeName" class="form-label required">Employee Name:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-lines-fill"></i></span>
+                                <input type="text" class="form-control" id="employeeName" th:field="*{name}" required>
+                            </div>
+                            <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                        </div>
+                    </div>
+                    <!-- Gender -->
+                    <div class="col-md-4">
+                        <label class="form-label">Gender:</label>
+                        <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="bi bi-gender-ambiguous"></i>
+                    </span>
+                            <div class="form-check d-flex align-items-center ms-2">
+                                <input type="radio" class="form-check-input" id="male" th:field="*{gender}" value="MALE" required>
+                                <label class="form-check-label ms-1" for="male">Male</label>
+                            </div>
+                            <div class="form-check d-flex align-items-center ms-3">
+                                <input type="radio" class="form-check-input" id="female" th:field="*{gender}" value="FEMALE" required>
+                                <label class="form-check-label ms-1" for="female">Female</label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Username -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="username" class="form-label required">Username:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-person-circle"></i></span>
+                                <input type="text" class="form-control" id="username" th:field="*{username}" required>
+                            </div>
+                            <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Date of Birth -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="dateOfBirth" class="form-label required">Date of Birth:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-calendar-date-fill"></i></span>
+                                <input type="date" class="form-control" id="dateOfBirth" th:field="*{dateOfBirth}" required>
+                            </div>
+                            <div class="text-danger" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
+                        </div>
+                    </div>
+                    <!-- Phone -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="phone" class="form-label required">Phone:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
+                                <input type="text" class="form-control" id="phone" th:field="*{phone}" required>
+                            </div>
+                            <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                        </div>
+                    </div>
+                    <!-- Address -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="address" class="form-label required">Address:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-geo-alt-fill"></i></span>
+                                <input type="text" class="form-control" id="address" th:field="*{address}" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Email -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="email" class="form-label required">Email:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                            </div>
+                            <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+                    </div>
+                    <!-- Working Place -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="workingPlace" class="form-label">Working Place:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
+                                <input type="text" class="form-control" id="workingPlace" th:field="*{workPlace}">
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Position -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="position" class="form-label">Position:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-signpost-fill"></i></span>
+                                <input type="text" class="form-control" id="position" th:field="*{position}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Image Display -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label class="form-label">Employee Image:</label>
+                            <div class="input-group">
+
+                                <img id="employeeImage"
+                                     th:src="@{${employeeUpdateDto.urlImage}}"
+                                     alt="Employee Image"
+                                     width="100" height="100" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="col-md-4">
+                        <div class="mb-3">
+                            <label for="imageFile" class="form-label">Select Image:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-file-earmark-image"></i></span>
+                                <input type="file" class="form-control" id="imageFile" name="imageFile" onchange="previewImageAndUpdate(event)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <input type="hidden" th:field="*{urlImage}" />
+
+
+                <!-- Image Preview -->
+                <div class="row">
+                    <div class="col-md-4" id="imagePreviewContainer" style="display: none;">
+                        <img id="imagePreview" alt="Employee Image" class="img-thumbnail" style="max-width: 200px;" src="">
+                    </div>
+                </div>
+
+                <!-- Submit, Reset, and Cancel Buttons -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary">Update</button>
+                    <button type="reset" class="btn btn-secondary">Reset</button>
+                    <a href="/employees" class="btn btn-danger">Cancel</a>
+                </div>
+            </form>
+        </div>
+
+        <script>
+            function previewImageAndUpdate(event) {
+                const employeeImage = document.getElementById('employeeImage');
+                const imagePreview = document.getElementById('imagePreview');
+                const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+                const file = event.target.files[0];
+                const isUpdatingField = document.getElementById('isUpdating');
+
+                // If the user selects a file, show the image preview and set isUpdating to true
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        imagePreview.src = e.target.result;
+                        imagePreviewContainer.style.display = 'block'; // Show image preview container
+                    }
+                    reader.readAsDataURL(file);
+
+                    // Update isUpdating to true
+                    isUpdatingField.value = "true";
+                    employeeImage.style.display = 'none';
+                } else {
+                    imagePreview.src = '';
+                    imagePreviewContainer.style.display = 'none'; // Hide image preview container
+                    employeeImage.style.display = 'block';
+                    // Reset isUpdating to false if no file is selected
+                    isUpdatingField.value = "false";
+                }
+            }
+        </script>
+    </div>
+</div>
+</body>
+</html>

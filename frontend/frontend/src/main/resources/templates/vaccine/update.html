@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Vaccine</title>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            font-weight: bold;
+        }
+
+        .form-control {
+            border-radius: 5px;
+            height: 38px;
+        }
+
+        .action-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .form-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-success,
+        .btn-warning,
+        .btn-danger {
+            width: 100px;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        label span.text-danger {
+            color: #d9534f;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/vaccineType.css">
+</head>
+
+<body>
+<div class="row">
+    <div th:replace="fragments/commons/header :: header"></div>
+</div>
+<div class="row second-row">
+    <div class="col-3">
+        <div th:replace="fragments/commons/left :: left"></div>
+    </div>
+    <div class="col-9">
+        <div class="container mt-5">
+            <div class="form-container">
+                <h2 class="text-center mb-4">Update Vaccine</h2>
+                <!-- Display success or error message if they exist -->
+                <div th:if="${successMessage}" class="alert alert-success">
+                    <p th:text="${successMessage}"></p>
+                </div>
+                <div th:if="${errorMessage}" class="alert alert-danger">
+                    <p th:text="${errorMessage}"></p>
+                </div>
+
+                <form th:action="@{/vaccines/update}" th:object="${vaccineUpdateDto}" method="post">
+                    <!-- Vaccine ID field, read-only -->
+                    <div class="form-group row">
+                        <label for="id" class="col-sm-4 form-label">Vaccine ID<span
+                                class="text-danger">*</span>:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="id" name="id" th:field="*{id}" readonly>
+                            <div th:if="${#fields.hasErrors('id')}" class="text-danger" th:errors="*{id}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Vaccine status (Active/Inactive) -->
+                    <div class="form-group row">
+                        <label for="status" class="col-sm-4 form-label">Active:</label>
+                        <div class="col-sm-8 d-flex align-items-center" style="display: none">
+                            <input type="checkbox" id="status" name="statusCheckbox"
+                                   th:checked="${vaccineUpdateDto.status.name() == 'ACTIVE'}" onclick="toggleStatus()">
+                            <input type="hidden" id="hiddenStatus" name="status"
+                                   th:value="${vaccineUpdateDto.status.name()}">
+                            <div th:if="${#fields.hasErrors('status')}" class="text-danger" th:errors="*{status}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Vaccine name field -->
+                    <div class="form-group row">
+                        <label for="name" class="col-sm-4 form-label">Vaccine name<span
+                                class="text-danger">*</span>:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="name" name="name" th:field="*{name}" required>
+                            <div th:if="${#fields.hasErrors('name')}" class="text-danger" th:errors="*{name}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Vaccine Type field -->
+                    <div class="form-group row">
+                        <label for="vaccineTypeId" class="col-sm-4 form-label">Vaccine Type:</label>
+                        <div class="col-sm-8">
+                            <select class="form-control" id="vaccineTypeId" name="vaccineTypeId"
+                                    th:field="*{vaccineTypeId}">
+                                <option th:if="${isVaccineTypeInactive}" th:value="${vaccineUpdateDto.vaccineTypeId}"
+                                        selected>
+                                    Inactive - [[${inactiveVaccineTypeName}]]
+                                </option>
+                                <option th:each="vaccineTypeName : ${vaccineTypeNameList}"
+                                        th:value="${vaccineTypeName.id}"
+                                        th:text="${vaccineTypeName.name}"
+                                        th:selected="${vaccineTypeName.id == vaccineUpdateDto.vaccineTypeId}"></option>
+                            </select>
+                            <div th:if="${#fields.hasErrors('vaccineTypeId')}" class="text-danger"
+                                 th:errors="*{vaccineTypeId}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Number of injections field -->
+                    <div class="form-group row">
+                        <label for="numberOfInjection" class="col-sm-4 form-label">Number of inject:</label>
+                        <div class="col-sm-8">
+                            <input type="number" class="form-control" id="numberOfInjection" name="numberOfInjection"
+                                   th:field="*{numberOfInjection}">
+                            <div th:if="${#fields.hasErrors('numberOfInjection')}" class="text-danger"
+                                 th:errors="*{numberOfInjection}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Usage field -->
+                    <div class="form-group row">
+                        <label for="usage" class="col-sm-4 form-label">Usage:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="usage" name="usage" th:field="*{usage}">
+                            <div th:if="${#fields.hasErrors('usage')}" class="text-danger" th:errors="*{usage}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Indication field -->
+                    <div class="form-group row">
+                        <label for="indication" class="col-sm-4 form-label">Indication:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="indication" name="indication"
+                                   th:field="*{indication}">
+                            <div th:if="${#fields.hasErrors('indication')}" class="text-danger"
+                                 th:errors="*{indication}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Contraindication field -->
+                    <div class="form-group row">
+                        <label for="contraindication" class="col-sm-4 form-label">Contraindication:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="contraindication" name="contraindication"
+                                   th:field="*{contraindication}">
+                            <div th:if="${#fields.hasErrors('contraindication')}" class="text-danger"
+                                 th:errors="*{contraindication}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Origin field -->
+                    <div class="form-group row">
+                        <label for="origin" class="col-sm-4 form-label">Origin:</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="origin" name="origin" th:field="*{origin}">
+                            <div th:if="${#fields.hasErrors('origin')}" class="text-danger" th:errors="*{origin}"></div>
+                        </div>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="form-group row action-buttons">
+                        <button type="submit" class="btn btn-success">Save</button>
+                        <button type="reset" class="btn btn-warning">Reset</button>
+                        <a th:href="@{/vaccines/list}" class="btn btn-danger">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function toggleStatus() {
+        const checkbox = document.getElementById('status');
+        const hiddenStatus = document.getElementById('hiddenStatus');
+        hiddenStatus.value = checkbox.checked ? 'ACTIVE' : 'INACTIVE';
+    }
+</script>
+</body>
+
+</html>
